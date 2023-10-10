@@ -1,0 +1,68 @@
+﻿@using Data.Models;
+@using WebDxMVC.Models
+@model List<StockMovement>
+
+@{
+    ViewData["Title"] = "Stock Movement List";
+}
+
+<div class="mb-5">
+    <h2 class="mb-3">Stock Movement Filter</h2>
+    <form asp-action="StockMovementList" method="post">
+        <div class="row">
+            <div class="col-3">
+                <div class="form-group">
+                    <label for="stockCode">Stock Code</label>
+                    <input type="text" class="form-control" id="stockCode" name="stockCode" value="10081 SİEMENS">
+                </div>
+            </div>
+            <div class="col-3">
+                <div class="form-group">
+                    <label for="startDate">Start Date</label>
+                    <input type="date" class="form-control" id="startDate" name="startDate" value="2017-01-18">
+                </div>
+            </div>
+            <div class="col-3">
+                <div class="form-group">
+                    <label for="endDate">End Date</label>
+                    <input type="date" class="form-control" id="endDate" name="endDate" value="2017-02-09">
+                </div>
+            </div>
+            <div class="col-3">
+                <div class="form-group">
+                    <button type="submit" class="btn btn-primary mt-4 w-100">Filter</button>
+                </div>
+            </div>
+        </div>
+    </form>
+</div>
+
+<div>
+    <h2 class="mb-3">Stock Movements</h2>
+    @if (Model != null && Model.Count > 0)
+    {
+        @(Html.DevExtreme().DataGrid<StockMovement>()
+            .DataSource(Model)
+            .Columns(columns =>
+            {
+                columns.AddFor(m => m.SiraNo);
+                columns.AddFor(m => m.IslemTur);
+                columns.AddFor(m => m.EvrakNo);
+                columns.AddFor(m => m.Tarih);
+                columns.AddFor(m => m.GirisMiktar);
+                columns.AddFor(m => m.CikisMiktar);
+                columns.AddFor(m => m.Stok);
+            })
+            .Paging(p => p.PageSize(10))
+            .FilterRow(f => f.Visible(true))
+            .HeaderFilter(f => f.Visible(true))
+            .GroupPanel(p => p.Visible(true))
+            .Grouping(g => g.AutoExpandAll(false))
+            .RemoteOperations(true)
+            )
+    }
+    else
+    {
+        <div class="alert alert-info">Data not found.</div>
+    }
+</div>
