@@ -5,7 +5,7 @@
     /// </summary>
     public class StockMovement
     {
-        public int SiraNo { get; set; }
+        public long SiraNo { get; set; }
         public string IslemTur { get; set; }
         public string EvrakNo { get; set; }
         public string Tarih { get; set; }
