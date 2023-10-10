@@ -1,4 +1,5 @@
 ﻿using Data.Models;
+using DataAccess.Models;
 using Microsoft.Data.SqlClient;
 using Microsoft.EntityFrameworkCore;
 
@@ -20,15 +21,6 @@ namespace DataAccess.Repositories
 
             try
             {
-                //Test >>>
-
-                stockCode = "10081 SİEMENS";
-                startDate = 42736;
-                endDate = 42775;
-
-                //<<< Test
-
-
                 List<StockMovement> stockMovementList = await _dbContext.StockMovements
         .FromSqlRaw("EXEC dbo.GetStockMovements @MalKodu, @BaslangicTarihi, @BitisTarihi",
             new SqlParameter("@MalKodu", stockCode),
@@ -38,7 +30,7 @@ namespace DataAccess.Repositories
 
                 if (stockMovementList != null && stockMovementList.Count > 0)
                 {
-                    result.AddRange(result);
+                    result.AddRange(stockMovementList);
 
                     //TODO must be add success value on result model
                 }
