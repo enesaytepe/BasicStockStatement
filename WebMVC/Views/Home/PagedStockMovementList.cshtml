@@ -1,13 +1,13 @@
 ﻿@using Data.Models;
-@model List<StockMovement>
+@model PagedStockMovementListViewModel
 
 @{
-    ViewData["Title"] = "Stock Movement List";
+    ViewData["Title"] = "Paged Stock Movement List";
 }
 
 <div class="mb-5">
     <h2 class="mb-3">Stock Movement Filter</h2>
-    <form asp-action="StockMovementList" method="post">
+    <form asp-action="PagedStockMovementList" method="get">
         <div class="row">
             <div class="col-3">
                 <div class="form-group">
@@ -34,13 +34,15 @@
             </div>
         </div>
 
-        <input type="hidden" name="pageNumber" value="@ViewBag.PageNumber" />
+        <input type="hidden" id="pageNumber" name="pageNumber" value="@(Model?.PagedData?.PageNumber ?? 1)" />
+
+        @(Model?.PagedData?.PageNumber ?? 1)
     </form>
 </div>
 
 <div>
     <h2 class="mb-3">Stock Movements</h2>
-    @if (Model != null && Model.Count > 0)
+    @if (Model != null && Model.PagedData.DataList != null && Model.PagedData.DataList.Count > 0)
     {
         <table class="table">
             <thead>
@@ -56,7 +58,7 @@
             </thead>
             <tbody>
 
-                @foreach (var movement in Model)
+                @foreach (var movement in Model.PagedData.DataList)
                 {
                     <tr>
                         <td>@movement.SiraNo</td>
@@ -75,4 +77,23 @@
     {
         <div class="alert alert-info">Data not found.</div>
     }
+</div>
+
+<div class="text-center">
+    <nav aria-label="Page navigation">
+        <ul class="pagination">
+            @for (int i = 1; i <= ViewBag.TotalPages; i++)
+            {
+                <li class="page-item @(Model.Filter.PageNumber == i ? "active" : "")">
+                    <a class="page-link" href="@Url.Action("PagedStockMovementList", "Home", new
+                    {
+                        pageNumber = i,
+                        stockCode = Model?.Filter.StockCode,
+                        startDate = Model?.Filter.StartDate,
+                        endDate = Model?.Filter.EndDate
+                    })">@i</a>
+                </li>
+            }
+        </ul>
+    </nav>
 </div>
