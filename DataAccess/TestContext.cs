@@ -16,6 +16,7 @@ namespace DataAccess
 
         //Stored Procedures
         public DbSet<StockMovement> StockMovements { get; set; }
+        public DbSet<StockMovement> PagedStockMovements { get; set; }
 
         protected override void OnModelCreating(ModelBuilder modelBuilder)
         {
