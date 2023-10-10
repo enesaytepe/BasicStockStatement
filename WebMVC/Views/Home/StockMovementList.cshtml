@@ -1,0 +1,76 @@
+﻿@using Data.Models;
+@model List<StockMovement>
+
+@{
+    ViewData["Title"] = "Stock Movement List";
+}
+
+<div class="mb-5">
+    <h2 class="mb-3">Stock Movement Filter</h2>
+    <form asp-action="StockMovementList" method="post">
+        <div class="row">
+            <div class="col-3">
+                <div class="form-group">
+                    <label for="stockCode">Stock Code</label>
+                    <input type="text" class="form-control" id="stockCode" name="stockCode">
+                </div>
+            </div>
+            <div class="col-3">
+                <div class="form-group">
+                    <label for="startDate">Start Date</label>
+                    <input type="date" class="form-control" id="startDate" name="startDate">
+                </div>
+            </div>
+            <div class="col-3">
+                <div class="form-group">
+                    <label for="endDate">End Date</label>
+                    <input type="date" class="form-control" id="endDate" name="endDate">
+                </div>
+            </div>
+            <div class="col-3">
+                <div class="form-group">
+                    <button type="submit" class="btn btn-primary mt-4 w-100">Filter</button>
+                </div>
+            </div>
+        </div>
+    </form>
+</div>
+
+<div>
+    <h2 class="mb-3">Stock Movements</h2>
+    @if (Model != null && Model.Count > 0)
+    {
+        <table class="table">
+            <thead>
+                <tr>
+                    <th>Sira No</th>
+                    <th>Islem Tur</th>
+                    <th>Evrak No</th>
+                    <th>Tarih</th>
+                    <th>Giris Miktar</th>
+                    <th>Cikis Miktar</th>
+                    <th>Stok</th>
+                </tr>
+            </thead>
+            <tbody>
+
+                @foreach (var movement in Model)
+                {
+                    <tr>
+                        <td>@movement.SiraNo</td>
+                        <td>@movement.IslemTur</td>
+                        <td>@movement.EvrakNo</td>
+                        <td>@movement.Tarih</td>
+                        <td>@movement.GirisMiktar</td>
+                        <td>@movement.CikisMiktar</td>
+                        <td>@movement.Stok</td>
+                    </tr>
+                }
+            </tbody>
+        </table>
+    }
+    else
+    {
+        <div class="alert alert-info">Data not found.</div>
+    }
+</div>
