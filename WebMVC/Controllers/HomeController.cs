@@ -1,10 +1,8 @@
 ﻿using Data.Models;
 using Data.RequestModels;
 using DataAccess;
-using DataAccess.Models;
 using DataAccess.Repositories;
 using Microsoft.AspNetCore.Mvc;
-using System.Collections.Generic;
 using System.Diagnostics;
 using WebMVC.Models;
 
