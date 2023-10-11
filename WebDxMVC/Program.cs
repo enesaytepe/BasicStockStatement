@@ -1,4 +1,7 @@
-using DataAccess;
+using Common;
+using DataAccess.Interfaces;
+using DataAccess.Repositories.Ado;
+using DataAccess.Repositories.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore;
 
 var builder = WebApplication.CreateBuilder(args);
@@ -7,6 +10,24 @@ var builder = WebApplication.CreateBuilder(args);
 builder.Services
     .AddControllersWithViews()
     .AddJsonOptions(options => options.JsonSerializerOptions.PropertyNamingPolicy = null);
+
+builder.Services.AddSingleton<IConnectionStringProvider, ConnectionStringProvider>();
+
+IConfiguration configuration = new ConfigurationBuilder()
+    .SetBasePath(Directory.GetCurrentDirectory())
+    .AddJsonFile("appsettings.json")
+    .Build();
+
+string repositoryType = configuration["RepositoryType"];
+
+if (repositoryType == "Ef")
+{
+    builder.Services.AddScoped<IStockRepository, EfStockRepository>();
+}
+else if (repositoryType == "AdoNet")
+{
+    builder.Services.AddScoped<IStockRepository, AdoNetStockRepository>();
+}
 
 builder.Services.AddDbContext<TestContext>(options =>
     options.UseSqlServer(builder.Configuration.GetConnectionString("DefaultConnection"))
