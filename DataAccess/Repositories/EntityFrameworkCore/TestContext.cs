@@ -1,13 +1,17 @@
-﻿using Data.Models;
+﻿using Common;
+using Data.Models;
 using DataAccess.Models;
 using Microsoft.EntityFrameworkCore;
 
-namespace DataAccess
+namespace DataAccess.Repositories.EntityFrameworkCore
 {
     public partial class TestContext : DbContext
     {
-        public TestContext(DbContextOptions<TestContext> options) : base(options)
+        private readonly IConnectionStringProvider _connectionStringProvider;
+
+        public TestContext(IConnectionStringProvider connectionStringProvider)
         {
+            _connectionStringProvider = connectionStringProvider;
         }
 
         //Tables
@@ -17,6 +21,13 @@ namespace DataAccess
         //Stored Procedures
         public DbSet<StockMovement> StockMovements { get; set; }
         public DbSet<StockMovement> PagedStockMovements { get; set; }
+
+        protected override void OnConfiguring(DbContextOptionsBuilder optionsBuilder)
+        {
+            optionsBuilder.UseSqlServer(_connectionStringProvider.DefaultConnectionString);
+
+            base.OnConfiguring(optionsBuilder);
+        }
 
         protected override void OnModelCreating(ModelBuilder modelBuilder)
         {
