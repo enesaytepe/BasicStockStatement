@@ -46,7 +46,7 @@ namespace WebMVC.Controllers
 
             if (result.Success)
             {
-                return View(result);
+                return View(result.Data);
             }
             else
             {
