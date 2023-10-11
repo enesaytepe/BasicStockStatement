@@ -1,23 +1,22 @@
-﻿using Common;
+﻿using Business.Interfaces;
+using Common;
 using Data.Models;
 using Data.RequestModels;
-using DataAccess.Interfaces;
-using DataAccess.Repositories.EntityFrameworkCore;
 using Microsoft.AspNetCore.Mvc;
 
 namespace WebDxMVC.Controllers
 {
     public class HomeController : Controller
     {
-        private readonly TestContext _dbContext;
+        private readonly ILogger<HomeController> _logger;
         private readonly IConnectionStringProvider _connectionStringProvider;
-        private readonly IStockRepository _stockRepository;
+        private readonly IStockService _stockManager;
 
-        public HomeController(TestContext dbContext, IConnectionStringProvider connectionStringProvider, IStockRepository stockRepository)
+        public HomeController(ILogger<HomeController> logger, IConnectionStringProvider connectionStringProvider, IStockService stockManager)
         {
-            _dbContext = dbContext;
+            _logger = logger;
             _connectionStringProvider = connectionStringProvider;
-            _stockRepository = stockRepository;
+            _stockManager = stockManager;
         }
 
         public IActionResult Index()
@@ -26,7 +25,8 @@ namespace WebDxMVC.Controllers
         }
 
         [ResponseCache(Duration = 0, Location = ResponseCacheLocation.None, NoStore = true)]
-        public IActionResult Error() {
+        public IActionResult Error()
+        {
             return View();
         }
 
@@ -40,44 +40,18 @@ namespace WebDxMVC.Controllers
         [HttpPost]
         public async Task<IActionResult> StockMovementList(StockMovementFilterModel model)
         {
-            //Veriler uygun hale getirilir.
-            string stockCode = model.StockCode.Trim();
-            int startDate = Convert.ToInt32((model.StartDate).ToOADate());
-            int endDate = Convert.ToInt32((model.EndDate).ToOADate());
+            ExecutionResult<List<StockMovement>> result = await _stockManager.GetStockMovements(model);
 
-            //Sonuç repository'den alınır.
-            List<StockMovement> stockMovementList = await _stockRepository.GetStockMovements(stockCode, startDate, endDate);
-
-            if (stockMovementList != null && stockMovementList.Count > 0)
+            if (result.Success)
             {
-                //Eğer data varsa stok hesaplaması yapılır.
-                decimal stock = 0;
-
-                foreach (StockMovement item in stockMovementList)
-                {
-                    //TODO string karşılaştırması değiştirilmesi gerekli.
-                    if (item.IslemTur == "Giriş")
-                    {
-                        stock = stock + item.GirisMiktar;
-                    }
-                    else if (item.IslemTur == "Çıkış")
-                    {
-                        stock = stock - item.CikisMiktar;
-                    }
-                    else
-                    {
-                        //do nothing
-                    }
-
-                    item.Stok = stock;
-                }
-
-                return View(stockMovementList);
+                return View(result);
             }
             else
             {
-                return View();
+                //TODO log
             }
+
+            return View();
         }
     }
 }

@@ -1,4 +1,6 @@
-﻿using Common;
+﻿using Business.Interfaces;
+using Business.Managers;
+using Common;
 using DataAccess.Interfaces;
 using DataAccess.Repositories.Ado;
 using DataAccess.Repositories.EntityFrameworkCore;
@@ -25,6 +27,8 @@ else if (repositoryType == "AdoNet")
 {
     builder.Services.AddScoped<IStockRepository, AdoNetStockRepository>();
 }
+
+builder.Services.AddScoped<IStockService, StockManager>();
 
 var app = builder.Build();
 

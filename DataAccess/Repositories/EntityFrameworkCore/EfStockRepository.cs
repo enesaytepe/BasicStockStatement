@@ -70,14 +70,14 @@ namespace DataAccess.Repositories.EntityFrameworkCore
                 };
 
                 List<StockMovement> stockMovementList = await _dbContext.PagedStockMovements
-           .FromSqlRaw("EXEC dbo.GetPagedStockMovements @MalKodu, @BaslangicTarihi, @BitisTarihi, @PageNumber, @PageSize, @TotalPages OUTPUT",
-               new SqlParameter("@MalKodu", stockCode),
-               new SqlParameter("@BaslangicTarihi", startDate),
-               new SqlParameter("@BitisTarihi", endDate),
-               new SqlParameter("@PageNumber", pageNumber),
-               new SqlParameter("@PageSize", pageSize),
-               totalPagesParam // OUTPUT parametresi
-           ).ToListAsync();
+                .FromSqlRaw("EXEC dbo.GetPagedStockMovements @MalKodu, @BaslangicTarihi, @BitisTarihi, @PageNumber, @PageSize, @TotalPages OUTPUT",
+                   new SqlParameter("@MalKodu", stockCode),
+                   new SqlParameter("@BaslangicTarihi", startDate),
+                   new SqlParameter("@BitisTarihi", endDate),
+                   new SqlParameter("@PageNumber", pageNumber),
+                   new SqlParameter("@PageSize", pageSize),
+                   totalPagesParam // OUTPUT parametresi
+                ).ToListAsync();
 
                 if (stockMovementList != null && stockMovementList.Count > 0)
                 {

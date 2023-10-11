@@ -1,11 +1,12 @@
-﻿using Data.Models;
+﻿using Common;
+using Data.Models;
 using Data.RequestModels;
 
 namespace Business.Interfaces
 {
     public interface IStockService
     {
-        Task<List<StockMovement>> GetStockMovements(StockMovementFilterModel model);
-        Task<PagedDataModel<StockMovement>> GetPagedStockMovements(PagedStockMovementFilterModel model);
+        Task<ExecutionResult<List<StockMovement>>> GetStockMovements(StockMovementFilterModel model);
+        Task<ExecutionResult<PagedDataModel<StockMovement>>> GetPagedStockMovements(PagedStockMovementFilterModel model);
     }
 }

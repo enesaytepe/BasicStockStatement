@@ -1,8 +1,9 @@
+using Business.Interfaces;
+using Business.Managers;
 using Common;
 using DataAccess.Interfaces;
 using DataAccess.Repositories.Ado;
 using DataAccess.Repositories.EntityFrameworkCore;
-using Microsoft.EntityFrameworkCore;
 
 var builder = WebApplication.CreateBuilder(args);
 
@@ -29,9 +30,7 @@ else if (repositoryType == "AdoNet")
     builder.Services.AddScoped<IStockRepository, AdoNetStockRepository>();
 }
 
-builder.Services.AddDbContext<TestContext>(options =>
-    options.UseSqlServer(builder.Configuration.GetConnectionString("DefaultConnection"))
-);
+builder.Services.AddScoped<IStockService, StockManager>();
 
 var app = builder.Build();
 

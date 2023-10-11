@@ -17,9 +17,9 @@ namespace Business.Managers
             _stockRepository = stockRepository;
         }
 
-        public async Task<List<StockMovement>> GetStockMovements(StockMovementFilterModel model)
+        public async Task<ExecutionResult<List<StockMovement>>> GetStockMovements(StockMovementFilterModel model)
         {
-            List<StockMovement> result = new List<StockMovement>();
+            ExecutionResult<List<StockMovement>> result = new ExecutionResult<List<StockMovement>>();
 
             //Veriler uygun hale getirilir.
             string stockCode = model.StockCode.Trim();
@@ -53,19 +53,76 @@ namespace Business.Managers
                     item.Stok = stock;
                 }
 
-                result.AddRange(stockMovementList);
+                result.Data = stockMovementList;
+                result.Success = true;
             }
             else
             {
                 //TODO add error on result or nothing
+                result.AddError("Data not found.");
             }
 
             return result;
         }
 
-        public Task<PagedDataModel<StockMovement>> GetPagedStockMovements(PagedStockMovementFilterModel model)
+        public async Task<ExecutionResult<PagedDataModel<StockMovement>>> GetPagedStockMovements(PagedStockMovementFilterModel model)
         {
-            throw new NotImplementedException();
+            ExecutionResult<PagedDataModel<StockMovement>> result = new ExecutionResult<PagedDataModel<StockMovement>>();
+            result.Data = new PagedDataModel<StockMovement>();
+
+            if (!String.IsNullOrEmpty(model.StockCode))
+            {
+                //Veriler uygun hale getirilir.
+                string stockCode = model.StockCode.Trim();
+                int startDate = Convert.ToInt32((model.StartDate).ToOADate());
+                int endDate = Convert.ToInt32((model.EndDate).ToOADate());
+                int pageNumber = model.PageNumber < 1 ? 1 : model.PageNumber;
+
+                //Default page size tanımlaması
+                int pageSize = 5;
+
+                //Sonuç repository'den alınır.
+                PagedDataModel<StockMovement> stockMovementList = await _stockRepository.GetPagedStockMovements(stockCode, startDate, endDate, pageNumber, pageSize);
+
+                if (stockMovementList != null && stockMovementList.DataList != null && stockMovementList.DataList.Count > 0)
+                {
+                    //Eğer data varsa stok hesaplaması yapılır.
+                    //decimal stock = 0;
+
+                    //TODO Stok hesaplaması, sayfalamalı stok hareketleri sayfasında nasıl olmalı?
+
+                    //foreach (StockMovement item in stockMovementList.DataList)
+                    //{
+                    //    //TODO string karşılaştırması değiştirilmesi gerekli.
+                    //    if (item.IslemTur == "Giriş")
+                    //    {
+                    //        stock = stock + item.GirisMiktar;
+                    //    }
+                    //    else if (item.IslemTur == "Çıkış")
+                    //    {
+                    //        stock = stock - item.CikisMiktar;
+                    //    }
+                    //    else
+                    //    {
+                    //        //do nothing
+                    //    }
+
+                    //    item.Stok = stock;
+                    //}
+
+                    result.Data.DataList = stockMovementList.DataList;
+                    result.Data.PageNumber = pageNumber;
+                    result.Data.PageSize = pageSize;
+                    result.Data.TotalPage = stockMovementList.TotalPage;
+                    result.Success = true;
+                }
+                else
+                {
+                    result.AddError("Data not found.");
+                }
+            }
+
+            return result;
         }
     }
 }
