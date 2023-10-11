@@ -1,7 +1,8 @@
-﻿using Data.Models;
+﻿using Common;
+using Data.Models;
 using Data.RequestModels;
-using DataAccess;
-using DataAccess.Repositories;
+using DataAccess.Interfaces;
+using DataAccess.Repositories.EntityFrameworkCore;
 using Microsoft.AspNetCore.Mvc;
 
 namespace WebDxMVC.Controllers
@@ -9,10 +10,14 @@ namespace WebDxMVC.Controllers
     public class HomeController : Controller
     {
         private readonly TestContext _dbContext;
+        private readonly IConnectionStringProvider _connectionStringProvider;
+        private readonly IStockRepository _stockRepository;
 
-        public HomeController(TestContext dbContext)
+        public HomeController(TestContext dbContext, IConnectionStringProvider connectionStringProvider, IStockRepository stockRepository)
         {
             _dbContext = dbContext;
+            _connectionStringProvider = connectionStringProvider;
+            _stockRepository = stockRepository;
         }
 
         public IActionResult Index()
@@ -35,16 +40,13 @@ namespace WebDxMVC.Controllers
         [HttpPost]
         public async Task<IActionResult> StockMovementList(StockMovementFilterModel model)
         {
-            //Repository tanımlaması yapılır.
-            StockRepository stockRepository = new StockRepository(_dbContext);
-
             //Veriler uygun hale getirilir.
             string stockCode = model.StockCode.Trim();
             int startDate = Convert.ToInt32((model.StartDate).ToOADate());
             int endDate = Convert.ToInt32((model.EndDate).ToOADate());
 
             //Sonuç repository'den alınır.
-            List<StockMovement> stockMovementList = await stockRepository.GetStockMovements(stockCode, startDate, endDate);
+            List<StockMovement> stockMovementList = await _stockRepository.GetStockMovements(stockCode, startDate, endDate);
 
             if (stockMovementList != null && stockMovementList.Count > 0)
             {
